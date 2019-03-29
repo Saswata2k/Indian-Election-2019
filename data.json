@@ -1,0 +1,14 @@
+{ "DATABASE_CONFIG":{  
+      "host_port":"localhost:27017"
+   },
+   "COLLECTION_CONFIG":{  
+      "dbname":"Portfolio",
+      "collection_name":"Election_",
+      "collection_BJP":"Election_BJP",
+      "collection_Congress":"Election_Congress",
+      "category_field_name":"Tweet_cleaned"
+   },
+   "STOPWORDS_CONFIG":{  
+      "predefined_stopwords":"could would please regards"
+   }
+}
