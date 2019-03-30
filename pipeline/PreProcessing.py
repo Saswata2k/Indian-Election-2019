@@ -19,7 +19,7 @@ class bpp_preprocess:
     global data
     logger=logging.getLogger(__name__)
     
-    with open('data.json','r') as fin:
+    with open('../data.json','r') as fin:
         data=json.load(fin)
         fin.close()
         

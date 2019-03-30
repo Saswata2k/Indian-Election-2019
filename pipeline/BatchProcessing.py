@@ -30,13 +30,14 @@ from MultiCoreProcess import parallelize_all_convos
 from PreProcessing import bpp_preprocess
 
 class BatchProcessing(luigi.Task):
-    global data,logger
+    global data,logger,mongoObject
     
     #Fetch parameters from terminal
     batch_count=luigi.IntParameter(default=10)
-    label=luigi.Parameter(default='2019')
+    label=luigi.Parameter(default='BJP')
     limit=luigi.IntParameter(default='1000')
-    with open('data.json','r') as fin:
+    
+    with open('../data.json','r') as fin:
         data=json.load(fin)
         fin.close()
     
@@ -51,22 +52,24 @@ class BatchProcessing(luigi.Task):
     def connect_mongo(self):
         #Show information and log whether pipeline is being run for SSF or ITD system and set config file accordingly
         self.log_and_print("Setting config variables and Executing pipeline for SSF data")
-        self.collection_name=data['COLLECTION_CONFIG']['collection_Congress']
-        self.mongoObject=MongoDB(data['COLLECTION_CONFIG']['dbname'],self.collection_name)
-        if self.label=='BJP':
-            self.collection_name=data['COLLECTION_CONFIG']['collection_BJP']
-            self.mongoObject=MongoDB(data['COLLECTION_CONFIG']['dbname'],self.collection_name)
-
-        #Create the pipeline to import data from MongoDB
+         #Create the pipeline to import data from MongoDB
         self.pipeline=[
                      {"$match":{"$and":[#{data['SSF_COLLECTION_CONFIG']['text_column_array_name']:{"$exists":True}},
                                         {data['COLLECTION_CONFIG']['category_field_name']:{"$exists":False}}]}},
                      {"$limit":self.limit},
                      {"$project": {"id":"$_id","location" : "$Location", "likes" : "$Likes","retweet":"$Retweet","tweet":"$Tweet","created_at":"$Created At","name":"$Name"}}
                 ]
+        #Default : Process dataset for BJP tweets
+        self.collection_name=data['COLLECTION_CONFIG']['collection_BJP']
+        logger.error('Processing {} tweets with batch count {} and limit {}'.format(self.label,self.batch_count,self.limit))
+        print('Processing {} tweets with batch count {} and limit {}'.format(self.label,self.batch_count,self.limit))
+        if self.label=='Congress':
+            self.collection_name=data['COLLECTION_CONFIG']['collection_Congress']    
+        elif self.label=='BJP':
+            self.collection_name=data['COLLECTION_CONFIG']['collection_BJP']
+        self.mongoObject=MongoDB(data['COLLECTION_CONFIG']['dbname'],self.collection_name)
         self.cursor=self.mongoObject.getCollection().aggregate(self.pipeline,allowDiskUse=True)
-        #self.cursor.maxTimeMS(43200)
-        logger.info('Mongo Object initiated loading {}'.format(self.mongoObject.getCollection()))
+        logger.info('Mongo Object initiated loading {}'.format(self.mongoObject.getCollection()))    
     
     #Util function to print and log same information to avoid redundancy
     def log_and_print(self,x):
