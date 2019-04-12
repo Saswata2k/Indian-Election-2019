@@ -6,7 +6,8 @@
       "collection_name":"Election_",
       "collection_BJP":"Election_BJP",
       "collection_Congress":"Election_Congress",
-      "category_field_name":"Tweet_cleaned"
+      "category_field_name":"Tweet_cleaned",
+      "category_field_name_":"Tweet_translated"
    },
    "STOPWORDS_CONFIG":{  
       "predefined_stopwords":"could would please regards"

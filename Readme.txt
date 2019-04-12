@@ -1,6 +1,6 @@
 cmd for running luigi pipeline:
 
-python BatchProcessing.py BatchProcessing --batch-count=20 --limit=2000 --label='BJP' --local
+python BatchProcessing.py BatchProcessing --batch-count=1 --limit=1 --label='BJP' --local
 
 Repo has 4 sections:
   notebooks : EDA, Twitter crawler,Model training files

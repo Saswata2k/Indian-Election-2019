@@ -50,6 +50,7 @@ class BatchProcessing(luigi.Task):
         #print("Starting BatchProcessing Task with process type {}".format(process_type))
         #####################################################################################
     def connect_mongo(self):
+        #TODO : Modify this part
         #Show information and log whether pipeline is being run for SSF or ITD system and set config file accordingly
         self.log_and_print("Setting config variables and Executing pipeline for SSF data")
          #Create the pipeline to import data from MongoDB
@@ -57,15 +58,17 @@ class BatchProcessing(luigi.Task):
                      {"$match":{"$and":[#{data['SSF_COLLECTION_CONFIG']['text_column_array_name']:{"$exists":True}},
                                         {data['COLLECTION_CONFIG']['category_field_name']:{"$exists":False}}]}},
                      {"$limit":self.limit},
-                     {"$project": {"id":"$_id","location" : "$Location", "likes" : "$Likes","retweet":"$Retweet","tweet":"$Tweet","created_at":"$Created At","name":"$Name"}}
+                     {"$project": {"id":"$_id","location" : "$Location","tweet":"$Tweet","created_at":"$Created At","name":"$Name"}}
                 ]
         #Default : Process dataset for BJP tweets
-        self.collection_name=data['COLLECTION_CONFIG']['collection_BJP']
+        self.collection_name=data['COLLECTION_CONFIG']['collection_Congress']    
         logger.error('Processing {} tweets with batch count {} and limit {}'.format(self.label,self.batch_count,self.limit))
         print('Processing {} tweets with batch count {} and limit {}'.format(self.label,self.batch_count,self.limit))
-        if self.label=='Congress':
+        if self.label.lower()=='congress':
+            print('Processing for Congress')
             self.collection_name=data['COLLECTION_CONFIG']['collection_Congress']    
-        elif self.label=='BJP':
+        elif self.label.lower()=='bjp':
+            print('Processing for BJP')
             self.collection_name=data['COLLECTION_CONFIG']['collection_BJP']
         self.mongoObject=MongoDB(data['COLLECTION_CONFIG']['dbname'],self.collection_name)
         self.cursor=self.mongoObject.getCollection().aggregate(self.pipeline,allowDiskUse=True)

@@ -62,6 +62,9 @@ class bpp_preprocess:
         if tweet:
             clean_tweet=self.translate_tweet(tweet)
             #text=self.html_to_text(clean_tweet)
+            #########################################################
+            #TODO : Uncomment while running for whole processing
+            #########################################################
             filtered_tweet=self.regex_filtering(clean_tweet)
             #filtered_tweet=self.clean_tweets(clean_tweet)
             return filtered_tweet
